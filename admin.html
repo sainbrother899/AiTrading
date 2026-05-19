@@ -1,16 +1,572 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Panel | TradeAxis</title>
-  <link rel="stylesheet" href="styles.css?v=v4" />
-</head>
-<body>
-  <div id="app"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=v4"></script>
-  <script src="core.js?v=v4"></script>
-  <script src="admin-app.js?v=v4"></script>
-</body>
+
+<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
+<meta content="no-cache" http-equiv="Pragma"/>
+<meta content="0" http-equiv="Expires"/>
+<meta charset="utf-8">
+<meta content="width=device-width,initial-scale=1" name="viewport">
+<title>Admin Panel | Clean Base</title>
+
+
+<link href="styles.css?v=clean-step1" rel="stylesheet"/>
+</meta></meta></head>
+<body data-admin-page="true" data-premium-ui="true">
+<div class="neon-bg">
+<span></span><span></span><span></span><span></span>
+</div>
+<header class="topbar">
+<div class="brand">
+<div class="logo">AI</div>
+<div>
+<h1>AI Trading Assistant</h1>
+<p>Signals • Real prices • Referrals • PnL analytics</p>
+</div>
+</div>
+<div class="auth-actions">
+<span class="pill" id="userBadge">Guest</span>
+<button class="ghost-btn hidden" id="logoutBtn">Logout</button>
+</div>
+</header>
+<main>
+<section class="auth-page" id="authPage">
+<div class="auth-grid">
+<div class="hero-copy">
+<p class="label">Separate admin access</p>
+<h2>Admin Control Panel</h2>
+<p class="muted">Manage AI signals, free indicator limits, payment verification, user plans and dashboard control from a separate admin URL.</p>
+<div class="hero-points">
+<p>✅ Separate admin login</p>
+<p>✅ Manage user payments</p>
+<p>✅ Control BUY/SELL/WAIT signal</p>
+<p>✅ No admin tab on user side</p>
+</div>
+</div>
+<div class="card auth-card">
+<div class="tabs single-tab">
+<button class="tab active" data-auth-tab="login">Admin Login</button>
+</div>
+<div class="auth-form active-form" id="loginForm">
+<label>Email</label>
+<input id="loginEmail" placeholder="user@email.com" type="email"/>
+<label>Password</label>
+<input id="loginPassword" placeholder="Password" type="password"/>
+<button class="primary-btn" id="loginBtn">Login</button><p class="tiny-warning">Admin login: admin@aitrade.local / admin123</p>
+</div>
+</div>
+</div>
+
+</section>
+<section class="hidden" id="appPage">
+<nav class="bottom-nav">
+<button class="nav-btn active" data-page="admin">Admin</button>
+<button class="nav-btn" data-page="dashboard">User View</button>
+<button class="nav-btn" data-page="analytics">PnL</button>
+</nav>
+
+
+
+
+
+<section class="page admin-premium-page" id="admin">
+<div class="admin-premium-hero">
+<div>
+<p class="label">Admin Command Center</p>
+<h2>AI Trading Control Panel</h2>
+<span>Manage users, deposits, KYC, plans, trades and AI execution.</span>
+</div>
+<div class="admin-live-card">
+<b>LIVE</b>
+<small>Control Mode Active</small>
+</div>
+</div>
+<div class="admin-layout">
+<div class="card admin-menu">
+<p class="label">Admin Panel</p>
+<h2>Controls</h2> <button class="admin-tab" data-admin-tab="adminUsers">👥 Users</button>
+<button class="admin-tab" data-admin-tab="adminOverview">⌂ Overview</button>
+<button class="admin-tab" data-admin-tab="adminDeposits">▣ Deposits</button>
+<button class="admin-tab" data-admin-tab="adminWithdrawals">↧ Withdraw</button>
+<button class="admin-tab" data-admin-tab="adminSignals">⚡ Signals</button>
+<button class="admin-tab" data-admin-tab="adminPlans">◇ Plans</button>
+<button class="admin-tab" data-admin-tab="adminPlanEditor">✎ Plan Edit</button>
+<button class="admin-tab" data-admin-tab="adminKyc">✓ KYC</button>
+<button class="admin-tab" data-admin-tab="adminMassTrade">⇅ Bulk AI Trade</button>
+<button class="admin-tab" data-admin-tab="adminManagedTrade">▤ Open AI Trades</button>
+<button class="admin-tab" data-admin-tab="adminReferrals">⤴ Referral</button>
+</div>
+<div class="admin-content">
+<div class="admin-panel" id="adminUsers">
+<div class="card admin-users-head-card">
+<div class="section-head">
+<div>
+<p class="label">Users</p>
+<h2>User Management</h2>
+<p class="muted small">User wallet, plan, AI trade setting, KYC और status यहीं से manage करें.</p>
+</div>
+</div>
+<div class="admin-user-search-row">
+<input id="adminUserSearch" placeholder="Search by name, email or mobile" type="search"/>
+<select id="adminUserStatusFilter">
+<option value="ALL">All Users</option>
+<option value="ACTIVE">Active</option>
+<option value="BLOCKED">Blocked</option>
+<option value="AI_ON">AI ON</option>
+<option value="AI_OFF">AI OFF</option>
+</select>
+</div>
+</div>
+<div class="card table-card">
+<div class="section-head">
+<div>
+<p class="label">User List</p>
+<h2>All Users</h2>
+</div>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Plan</th>
+<th>Wallet</th>
+<th>Deposit</th>
+<th>P/L + Bonus</th>
+<th>AI Size</th>
+<th>AI Used</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="adminUsersLog">
+<tr><td class="empty" colspan="9">No users yet.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card admin-user-detail-card" id="adminUserDetailCard">
+<div class="section-head">
+<div>
+<p class="label">Selected User</p>
+<h2 id="adminSelectedUserTitle">No user selected</h2>
+<p class="muted small" id="adminSelectedUserSub">Select a user from list.</p>
+</div>
+</div>
+<div class="admin-user-detail-grid">
+<div><span>Wallet</span><b id="adminDetailWallet">₹0</b></div>
+<div><span>Approved Deposit</span><b id="adminDetailDeposit">₹0</b></div>
+<div><span>P/L + Bonus</span><b id="adminDetailPnl">₹0</b></div>
+<div><span>AI Used / Limit</span><b id="adminDetailAiLimit">0 / 0</b></div>
+</div>
+<div class="admin-user-control-grid">
+<label>
+              Plan
+              <select id="adminUserPlanSelect"></select>
+</label>
+<label>
+              AI Trade Size
+              <select id="adminUserAiPercentSelect">
+<option value="25">25%</option>
+<option value="50">50%</option>
+<option value="75">75%</option>
+<option value="100">100%</option>
+</select>
+</label>
+<label class="toggle-row admin-user-toggle">
+<span>AI Trade ON/OFF</span>
+<input id="adminUserAiToggle" type="checkbox"/>
+</label>
+<label class="toggle-row admin-user-toggle">
+<span>User Active/Blocked</span>
+<input checked="" id="adminUserActiveToggle" type="checkbox"/>
+</label>
+</div>
+<div class="admin-wallet-adjust-box">
+<p class="label">Wallet Adjustment</p>
+<div class="admin-wallet-adjust-grid">
+<input id="adminWalletAdjustAmount" placeholder="Amount" type="number"/>
+<select id="adminWalletAdjustType">
+<option value="ADD">Add Balance</option>
+<option value="DEDUCT">Deduct Balance</option>
+</select>
+<input id="adminWalletAdjustNote" placeholder="Reason / Note" type="text"/>
+<button class="primary-btn" id="adminWalletAdjustBtn" type="button">Apply</button>
+</div>
+</div>
+<div class="action-row admin-user-actions-row">
+<button class="approve-btn" id="adminSaveUserControlBtn" type="button">Save User Settings</button>
+<button class="ghost-btn" id="adminViewUserHistoryBtn" type="button">Refresh Details</button>
+</div>
+</div>
+</div>
+<div class="admin-panel active-admin-panel" id="adminOverview">
+<div class="admin-quick-grid" id="adminQuickGrid">
+<div class="admin-mini-card"><span>Total Users</span><b id="adminTotalUsersMini">0</b></div>
+<div class="admin-mini-card"><span>Deposits</span><b id="adminTotalDepositsMini">$0</b></div>
+<div class="admin-mini-card"><span>Pending</span><b id="adminPendingDepositsMini">0</b></div>
+<div class="admin-mini-card"><span>Open Trades</span><b id="adminOpenTradesMini">0</b></div>
+</div>
+<div class="analytics-grid">
+<div class="card metric-card"><p>Total Users</p><h2 id="adminTotalUsers">0</h2></div>
+<div class="card metric-card"><p>Total Deposits</p><h2 id="adminTotalDeposits">$0.00</h2></div>
+<div class="card metric-card"><p>Pending Deposits</p><h2 id="adminPendingDeposits">0</h2></div>
+<div class="card metric-card"><p>Open Trades</p><h2 id="adminOpenTrades">0</h2></div>
+</div>
+<div class="card">
+<p class="label">Quick Status</p>
+<h2>Platform Summary</h2>
+<div class="checklist" id="adminSummaryList"></div>
+</div>
+</div>
+<div class="admin-panel" id="adminDeposits">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Deposit Management</p><h2>Wallet Approval</h2></div>
+<button class="ghost-btn" id="clearDepositsBtn">Clear</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Amount</th><th>UTR</th><th>Screenshot</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="depositRequestsLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminWithdrawals">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Withdrawal Management</p><h2>Withdrawal Requests</h2></div>
+<button class="ghost-btn" id="clearWithdrawalsBtn">Clear</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Amount</th><th>Method</th><th>Account / UPI</th><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="withdrawalRequestsLog"><tr><td class="empty" colspan="7">No withdrawal requests.</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminSignals">
+<div class="card">
+<p class="label">Signal Management</p>
+<h2>Create Trading Signal</h2>
+<label class="input-label">Coin</label>
+<select id="adminSignalCoin">
+<option value="BTCUSDT">BTC/USDT</option>
+<option value="ETHUSDT">ETH/USDT</option>
+<option value="SOLUSDT">SOL/USDT</option>
+<option value="BNBUSDT">BNB/USDT</option>
+</select>
+<label class="input-label">Signal</label>
+<select id="adminSignal">
+<option value="BUY">BUY / LONG</option>
+<option value="SELL">SELL / SHORT</option>
+<option value="WAIT">WAIT / NO TRADE</option>
+</select>
+<div class="order-row">
+<div>
+<label class="input-label">Entry Price</label>
+<input id="adminEntryPrice" placeholder="Optional entry price" type="number">
+</input></div>
+<div>
+<label class="input-label">Target Price</label>
+<input id="adminTargetPrice" placeholder="Target price" type="number">
+</input></div>
+</div>
+<div class="order-row">
+<div>
+<label class="input-label">Stop Loss</label>
+<input id="adminStopLoss" placeholder="Stop loss" type="number">
+</input></div>
+<div>
+<label class="input-label">Confidence %</label>
+<input id="adminConfidence" max="100" min="1" type="number" value="70">
+</input></div>
+</div>
+<div class="order-row">
+<div>
+<label class="input-label">Risk Level</label>
+<select id="adminRiskLevel">
+<option value="LOW">Low</option>
+<option value="MEDIUM">Medium</option>
+<option value="HIGH">High</option>
+</select>
+</div>
+<div>
+<label class="input-label">Signal Expiry</label>
+<input id="adminSignalExpiry" placeholder="Example: 30 minutes">
+</input></div>
+</div>
+<label class="input-label">Signal Note</label>
+<input id="adminNote" placeholder="Market note"/>
+<label class="input-label">Free Signal Limit</label>
+<input id="adminFreeLimit" min="1" type="number" value="5"/>
+<button class="primary-btn" id="saveAdminBtn">Save Signal</button>
+</div>
+</div>
+<div class="admin-panel" id="adminPlans">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Subscription Management</p><h2>Plan Payment Requests</h2></div>
+<button class="ghost-btn" id="clearPaymentsBtn">Clear</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Plan</th><th>Name</th><th>Mobile</th><th>UTR</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="paymentRequestsLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminPlanEditor">
+<div class="admin-two-grid">
+<div class="card">
+<p class="label">Plan Editor</p>
+<h2>Create / Edit Plan</h2>
+<input id="planEditId" type="hidden"/>
+<label class="input-label">Plan Name</label>
+<input id="planNameInput" placeholder="Example: Pro"/>
+<label class="input-label">Price</label>
+<input id="planPriceInput" placeholder="499" type="number"/>
+<label class="input-label">Duration</label>
+<input id="planDurationInput" placeholder="30 days"/>
+<label class="input-label">Signal Limit</label>
+<input id="planSignalLimitInput" placeholder="50" type="number"/>
+<label class="input-label">AI/AI Trades Per Day</label>
+<input id="planAiLimitInput" placeholder="5" type="number"/>
+<label class="input-label">Features</label>
+<textarea id="planFeaturesInput" placeholder="One feature per line"></textarea>
+<button class="primary-btn" id="savePlanBtn">Save Plan</button>
+<button class="ghost-full" id="resetPlanFormBtn">Reset Form</button>
+</div>
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Active Plans</p><h2>Manage Plans</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Name</th><th>Price</th><th>AI/day</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="adminPlansEditorLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminKyc">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">KYC Management</p><h2>User KYC Requests</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Name</th><th>Doc Type</th><th>Doc No.</th><th>Files</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="adminKycLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminTrades">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Trade Monitoring</p><h2>User Trades</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Coin</th><th>Side</th><th>Margin</th><th>Entry</th><th>Current</th><th>PnL</th><th>Status</th></tr></thead>
+<tbody id="adminTradesLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminMassTrade">
+<div class="card bulk-ai-simple-note">
+<p class="label">Simple AI Trade System</p>
+<h3>Bulk AI Trade + Open AI Trades</h3>
+<p class="muted small">Admin सिर्फ Bulk AI Trade open करेगा. Close/Cancel के लिए Open AI Trades tab use करें. Single AI Trade option hidden है.</p>
+</div>
+<div class="card">
+<p class="label">Bulk AI Trade</p>
+<h2>Open Bulk AI Trade</h2>
+<p class="muted small">Manual user trades unlimited हैं. यह limit सिर्फ AI/AI trades पर apply होगी.</p>
+<label class="input-label">Coin</label>
+<select id="massTradeCoin">
+<option value="BTCUSDT">BTC/USDT</option>
+<option value="ETHUSDT">ETH/USDT</option>
+<option value="SOLUSDT">SOL/USDT</option>
+<option value="BNBUSDT">BNB/USDT</option>
+</select>
+<label class="input-label">Side</label>
+<select id="massTradeSide">
+<option value="BUY">BUY / LONG</option>
+<option value="SELL">SELL / SHORT</option>
+</select>
+<label class="input-label">Risk Level</label>
+<select id="massTradeRisk">
+<option value="LOW">Low</option>
+<option value="MEDIUM">Medium</option>
+<option value="HIGH">High</option>
+</select>
+<label class="input-label">Order Type</label>
+<select id="massTradeOrderType">
+<option value="MARKET">Market Price</option>
+<option value="LIMIT">Limit Price</option>
+</select>
+<label class="input-label">Leverage</label>
+<select id="massTradeLeverage">
+<option value="1">1x</option>
+<option value="5">5x</option>
+<option value="10">10x</option>
+<option value="25">25x</option>
+<option value="50">50x</option>
+<option value="100">100x</option>
+<option value="250">250x</option>
+<option value="500">500x</option>
+<option value="1000">1000x</option>
+<option value="1500">1500x</option>
+<option value="2000">2000x</option>
+</select>
+<label class="input-label">Trade Amount</label>
+<input id="massTradeAmount" min="1" type="number" value="100"/>
+<button class="primary-btn" id="openMassTradeBtn">Open Bulk AI Trade</button>
+<p class="tiny-warning">Eligible = Auto Trade ON + plan daily AI limit available.</p>
+</div>
+<div class="card">
+<p class="label">Close Bulk AI Trade</p>
+<h2>Close Open AI Trades</h2>
+<label class="input-label">Open AI Trade</label>
+<select id="massCloseTradeSelect">
+<option value="ALL">All Open Bulk AI Trades</option>
+</select>
+<label class="input-label">Close Price</label>
+<input id="massClosePrice" placeholder="Enter close price" type="number"/>
+<div class="trade-actions">
+<button class="primary-btn" id="closeSelectedMassTradeBtn">Close Selected</button>
+<button class="sell-btn" id="closeAllMassTradeBtn">Close All Open</button>
+</div>
+<p class="tiny-warning">Close होते ही PnL calculate होकर user history और wallet ledger में save होगा.</p>
+</div>
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">AI/AI Trade Limit</p><h2>User Eligibility Preview</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Plan</th><th>Used</th><th>Limit</th><th>Left</th><th>Status</th></tr></thead>
+<tbody id="adminAiEligibilityLog"><tr><td class="empty" colspan="6">No users found.</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminManagedTrade">
+<div class="card open-ai-close-all-card" id="openAiCloseAllCard">
+<div class="section-head">
+<div>
+<p class="label">Open AI Trades</p>
+<h2>Close / Cancel All</h2>
+<p class="muted small">सभी open AI trades को एक साथ close या cancel करें.</p>
+</div>
+</div>
+<label class="input-label">Close Price</label>
+<input id="allAiClosePrice" placeholder="Market price auto use होगा" type="number"/>
+<div class="action-row">
+<button class="approve-btn" id="closeAllAiTradesBtn" type="button">Close All Open AI Trades</button>
+<button class="reject-btn" id="cancelAllAiTradesBtn" type="button">Cancel All Open AI Trades</button>
+</div>
+</div>
+<div class="admin-two-grid">
+<div class="card">
+<p class="label">Single AI Trade</p>
+<h2>Single AI Trade Disabled</h2>
+<p class="muted small">Admin entry price manually डालकर user/all users के लिए managed trade open कर सकता है.</p>
+<label class="input-label">Target User</label>
+<select id="managedUserSelect">
+<option value="ALL">All Eligible Users</option>
+</select>
+<label class="input-label">Coin</label>
+<select id="managedCoin">
+<option value="BTCUSDT">BTC/USDT</option>
+<option value="ETHUSDT">ETH/USDT</option>
+<option value="SOLUSDT">SOL/USDT</option>
+<option value="BNBUSDT">BNB/USDT</option>
+</select>
+<label class="input-label">Side</label>
+<select id="managedSide">
+<option value="BUY">BUY / LONG</option>
+<option value="SELL">SELL / SHORT</option>
+</select>
+<label class="input-label">Risk Level</label>
+<select id="managedRisk">
+<option value="LOW">Low</option>
+<option value="MEDIUM">Medium</option>
+<option value="HIGH">High</option>
+</select>
+<label class="input-label">Trade Amount</label>
+<input id="managedAmount" min="1" type="number" value="1000">
+<label class="input-label">Entry Price</label>
+<input id="managedEntryPrice" placeholder="Example: 78450" type="number"/>
+<button class="primary-btn" id="openManagedTradeBtn">Open AI Trade</button>
+<p class="tiny-warning">यह AI simulation trade है. Profit/loss close price से calculate होगा.</p>
+</input></div>
+<div class="card">
+<p class="label">Open AI Trades</p>
+<h2>Set Close Price</h2>
+<label class="input-label">Open AI Trade</label>
+<select id="managedTradeSelect">
+<option value="">Select open AI trade</option>
+</select>
+<label class="input-label">Close Price</label>
+<input id="managedClosePrice" placeholder="Close price" type="number"/>
+<button class="primary-btn" id="closeManagedTradeBtn">Close Trade &amp; Update PnL</button>
+<button class="reject-btn full-width-btn" id="cancelManagedTradeBtn">Cancel Trade</button>
+<p class="tiny-warning">Close करते ही PnL user wallet ledger में add/deduct होगा.</p>
+</div>
+</div>
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Open AI Trades</p><h2>Open / Closed AI Trade History</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Coin</th><th>Side</th><th>Amount</th><th>Entry</th><th>Close</th><th>PnL</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="managedTradesLog"><tr><td class="empty" colspan="9">No AI trades.</td></tr></tbody>
+</table>
+</div>
+</div>
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Bulk AI Trades</p><h2>Bulk AI Trade History</h2></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>User</th><th>Coin</th><th>Side</th><th>Amount</th><th>Entry</th><th>Close</th><th>PnL</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="massTradesLog"><tr><td class="empty" colspan="9">No mass trades.</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="admin-panel" id="adminReferrals">
+<div class="card table-card">
+<div class="section-head">
+<div><p class="label">Referral Management</p><h2>Auto Referral Bonus</h2><p class="muted small">First approved deposit का 10% automatically referrer wallet में add होगा. Referral approval की जरूरत नहीं.</p></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Referrer</th><th>Joined User</th><th>Deposit</th><th>Bonus</th><th>Status</th></tr></thead>
+<tbody id="adminReferralLog"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</main>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js?v=clean-step1"></script><script src="core.js?v=clean-step1"></script><script src="admin-app.js?v=clean-step1"></script></body>
 </html>

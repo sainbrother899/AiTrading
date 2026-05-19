@@ -1,0 +1,82 @@
+{
+  "base_zip": "stop.zip",
+  "goal": "Keep old UI/design base, remove old app.js and duplicate HTML sections, add clean starter JS files.",
+  "removed_files": [
+    "app.js removed (371873 bytes)"
+  ],
+  "html_cleanup": [
+    {
+      "file": "index.html",
+      "removed_scripts": 6,
+      "removed_inline_boot_styles": 2,
+      "removed_ids": [
+        "profilepage",
+        "kyc",
+        "referral",
+        "analytics",
+        "subscription",
+        "depositModal",
+        "withdrawModal",
+        "paymentModal",
+        "toast"
+      ],
+      "new_scripts": [
+        "config.js",
+        "core.js",
+        "user-app.js"
+      ]
+    },
+    {
+      "file": "admin.html",
+      "removed_scripts": 5,
+      "removed_inline_boot_styles": 0,
+      "removed_ids": [
+        "dashboard",
+        "analytics",
+        "subscription",
+        "kyc",
+        "referral",
+        "paymentModal",
+        "toast"
+      ],
+      "new_scripts": [
+        "config.js",
+        "core.js",
+        "admin-app.js"
+      ]
+    }
+  ],
+  "kept_files": [
+    "index.html",
+    "styles.css",
+    "config.js",
+    "supabase-schema.sql",
+    "README.txt",
+    "admin.html",
+    "setup.html",
+    "supabase-db-connected-kyc-payout.sql",
+    "supabase-rls-temporary-testing-fix.sql",
+    "user-payout-methods-db-save-fix.sql",
+    "kyc-step-wizard-db-fix.sql",
+    "wallet-deposit-withdraw-db-fix.sql",
+    "wallet-balance-trade-logic-db-fix.sql",
+    "core.js",
+    "user-app.js",
+    "admin-app.js"
+  ],
+  "sql_reference_files_kept": [
+    "supabase-schema.sql",
+    "supabase-db-connected-kyc-payout.sql",
+    "supabase-rls-temporary-testing-fix.sql",
+    "user-payout-methods-db-save-fix.sql",
+    "kyc-step-wizard-db-fix.sql",
+    "wallet-deposit-withdraw-db-fix.sql",
+    "wallet-balance-trade-logic-db-fix.sql"
+  ],
+  "next_step": [
+    "Implement clean auth/session in core.js.",
+    "Implement user dashboard/wallet in user-app.js.",
+    "Implement admin login/tables in admin-app.js.",
+    "Do not add patches on top of old app.js because old app.js is removed."
+  ]
+}
