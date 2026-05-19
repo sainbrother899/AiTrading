@@ -1,14 +1,4 @@
--- Clean AI Trading Platform Supabase Schema V1
-create table if not exists public.profiles (
-  id text primary key,
-  name text,
-  email text unique,
-  mobile text,
-  role text default 'user',
-  kyc_status text default 'PENDING',
-  created_at timestamptz default now()
-);
-
+-- TradeAxis Clean V4 Schema
 create table if not exists public.wallet_ledger (
   id text primary key,
   user_id text not null,
@@ -20,7 +10,6 @@ create table if not exists public.wallet_ledger (
   created_at timestamptz default now(),
   unique(type, reference_id)
 );
-
 create table if not exists public.deposit_requests (
   id text primary key,
   user_id text,
@@ -32,7 +21,6 @@ create table if not exists public.deposit_requests (
   balance_applied boolean default false,
   created_at timestamptz default now()
 );
-
 create table if not exists public.withdrawal_requests (
   id text primary key,
   user_id text,
@@ -46,7 +34,6 @@ create table if not exists public.withdrawal_requests (
   hold_applied boolean default true,
   created_at timestamptz default now()
 );
-
 create table if not exists public.user_payout_methods (
   id text primary key,
   user_id text,
@@ -60,7 +47,6 @@ create table if not exists public.user_payout_methods (
   status text default 'PENDING',
   created_at timestamptz default now()
 );
-
 create table if not exists public.kyc_requests (
   id text primary key,
   user_id text,
@@ -71,7 +57,6 @@ create table if not exists public.kyc_requests (
   status text default 'PENDING',
   created_at timestamptz default now()
 );
-
 create table if not exists public.trades (
   id text primary key,
   user_id text,
@@ -83,24 +68,15 @@ create table if not exists public.trades (
   created_at timestamptz default now(),
   closed_at timestamptz
 );
-
 alter table public.wallet_ledger enable row level security;
 alter table public.deposit_requests enable row level security;
 alter table public.withdrawal_requests enable row level security;
 alter table public.user_payout_methods enable row level security;
 alter table public.kyc_requests enable row level security;
 alter table public.trades enable row level security;
-
--- Testing policies. Tighten before real launch.
-drop policy if exists "allow all wallet_ledger" on public.wallet_ledger;
-create policy "allow all wallet_ledger" on public.wallet_ledger for all to anon, authenticated using (true) with check (true);
-drop policy if exists "allow all deposit_requests" on public.deposit_requests;
-create policy "allow all deposit_requests" on public.deposit_requests for all to anon, authenticated using (true) with check (true);
-drop policy if exists "allow all withdrawal_requests" on public.withdrawal_requests;
-create policy "allow all withdrawal_requests" on public.withdrawal_requests for all to anon, authenticated using (true) with check (true);
-drop policy if exists "allow all user_payout_methods" on public.user_payout_methods;
-create policy "allow all user_payout_methods" on public.user_payout_methods for all to anon, authenticated using (true) with check (true);
-drop policy if exists "allow all kyc_requests" on public.kyc_requests;
-create policy "allow all kyc_requests" on public.kyc_requests for all to anon, authenticated using (true) with check (true);
-drop policy if exists "allow all trades" on public.trades;
-create policy "allow all trades" on public.trades for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all wallet_ledger" on public.wallet_ledger for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all deposit_requests" on public.deposit_requests for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all withdrawal_requests" on public.withdrawal_requests for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all user_payout_methods" on public.user_payout_methods for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all kyc_requests" on public.kyc_requests for all to anon, authenticated using (true) with check (true);
+create policy if not exists "allow all trades" on public.trades for all to anon, authenticated using (true) with check (true);

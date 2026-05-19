@@ -1,47 +1,23 @@
-AI Trading Platform Clean V1
+TradeAxis Clean V4 - Split Code
 
-Upload all files to your new GitHub repository.
+This version has no mixed app.js.
 
 Files:
-- index.html
+- index.html: user website only
+- admin.html: admin website only
+- core.js: shared state, ledger and helpers
+- user-app.js: only user code
+- admin-app.js: only admin code
 - styles.css
 - config.js
-- app.js
 - supabase-schema.sql
 
-Default admin:
-Email: admin@site.com
-Password: admin123
+Admin URL:
+admin.html
+
+Admin login:
+admin@site.com
+admin123
 
 Important:
-1. This is a clean rebuild. Do not mix old project files.
-2. Balance is controlled by wallet_ledger.
-3. Deposit minimum is ₹500.
-4. Withdrawal minimum is ₹2,000.
-5. Deposit uses 12 digit UTR and duplicate UTR is blocked.
-6. Withdrawal request immediately creates hold/deduct entry.
-7. Withdrawal approval does not deduct again.
-8. Withdrawal rejection releases/refunds amount.
-9. Trade open deducts trade amount.
-10. Trade close returns amount + profit or amount - loss.
-
-Supabase:
-- First test locally with browser storage.
-- Then add SUPABASE_URL and SUPABASE_ANON_KEY in config.js.
-- Run supabase-schema.sql in Supabase SQL Editor.
-
-
-Clean V2 Real UI Update:
-- Public admin login button removed.
-- Hidden admin access: open index.html?admin
-- User landing/login/register made professional.
-- User dashboard rebuilt like real trading website.
-- No public admin button on user page.
-
-
-Clean V3 Separate Admin:
-- index.html is only user website.
-- admin.html is separate admin login/admin panel.
-- Public user page does not show admin login.
-- Admin URL: /admin.html
-- Default admin: admin@site.com / admin123
+Do not mix old files. Upload only this ZIP's files to the new repo.
