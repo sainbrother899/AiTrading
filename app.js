@@ -1,6 +1,7 @@
 (() => {
   const CONFIG = window.APP_CONFIG || {};
   const hasSupabase = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && window.supabase);
+  const IS_ADMIN_PAGE = !!window.FORCE_ADMIN_PAGE || location.pathname.toLowerCase().endsWith("admin.html");
   const db = hasSupabase ? window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null;
 
   const MIN_DEPOSIT = 500;
@@ -69,22 +70,26 @@
   // ---------------- Render base ----------------
   function render(){
     if (!session) return renderLanding();
-    if (currentUser()?.role === "admin") return renderAdmin();
+    const u = currentUser();
+    if (IS_ADMIN_PAGE) {
+      if (u?.role === "admin") return renderAdmin();
+      session = null;
+      localStorage.removeItem("cleanTradingSession");
+      return renderLanding("Admin access only. Please login with admin account.");
+    }
+    if (u?.role === "admin") return renderAdmin();
     return renderUser();
   }
 
-  function renderLanding(){
-    const adminMode = new URLSearchParams(location.search).has("admin");
+  function renderLanding(message){
+    const adminMode = IS_ADMIN_PAGE;
     app.innerHTML = `
       <div class="page public-page">
         <header class="public-nav">
           <div class="container nav-inner">
             <div class="brand"><i>AI</i><span>TradeAxis</span></div>
             <div class="public-links">
-              <a href="#features">Features</a>
-              <a href="#security">Security</a>
-              <a href="#loginBox">Login</a>
-              <button class="btn" onclick="scrollToAuth()">Get Started</button>
+              ${adminMode ? "" : `<a href="#features">Features</a><a href="#security">Security</a><a href="#loginBox">Login</a><button class="btn" onclick="scrollToAuth()">Get Started</button>`}
             </div>
           </div>
         </header>
@@ -92,12 +97,11 @@
         <main class="container">
           <section class="public-hero">
             <div class="public-hero-copy">
-              <div class="eyebrow">AI Assisted Trading Dashboard</div>
-              <h1>Trade smarter with a secure wallet and clean market experience.</h1>
-              <p>Manage deposits, withdrawals, payout methods, KYC and trading activity from one professional dashboard.</p>
+              <div class="eyebrow">${adminMode ? "Admin Control Center" : "AI Assisted Trading Dashboard"}</div>
+              <h1>${adminMode ? "Secure admin panel for platform control." : "Trade smarter with a secure wallet and clean market experience."}</h1>
+              <p>${adminMode ? "Review users, KYC, deposits, withdrawals, payout methods and trades from one clean admin dashboard." : "Manage deposits, withdrawals, payout methods, KYC and trading activity from one professional dashboard."}</p>
               <div class="hero-actions">
-                <button class="btn" onclick="scrollToAuth()">Create Account</button>
-                <button class="btn secondary" onclick="switchAuth('login');scrollToAuth()">User Login</button>
+                ${adminMode ? `<button class="btn" onclick="scrollToAuth()">Admin Login</button><button class="btn secondary" onclick="location.href='index.html'">Back to Website</button>` : `<button class="btn" onclick="scrollToAuth()">Create Account</button><button class="btn secondary" onclick="switchAuth('login');scrollToAuth()">User Login</button>`}
               </div>
               <div class="trust-row">
                 <span>🔐 KYC Based Access</span>
@@ -123,19 +127,20 @@
             </div>
           </section>
 
-          <section id="features" class="feature-grid">
+          ${adminMode ? "" : `<section id="features" class="feature-grid">
             <article class="card feature-card"><i>💰</i><h3>Professional Wallet</h3><p>Deposit, withdrawal, pending funds and ledger-based balance in one place.</p></article>
             <article class="card feature-card"><i>📈</i><h3>Trading Controls</h3><p>Open and close trades with profit/loss settlement connected to wallet balance.</p></article>
             <article class="card feature-card"><i>🛡️</i><h3>Secure Verification</h3><p>KYC and payout methods are reviewed before money movement.</p></article>
-          </section>
+          </section>`}
 
           <section id="loginBox" class="auth-section">
             <div class="auth-info">
               <div class="eyebrow">${adminMode ? "Admin Access" : "User Access"}</div>
               <h2>${adminMode ? "Secure admin sign in" : "Login to your trading dashboard"}</h2>
-              <p>${adminMode ? "Admin access is hidden from public users." : "Create your account or login to manage wallet, KYC, trades and payouts."}</p>
+              <p>${adminMode ? "Admin access is available only from admin.html." : "Create your account or login to manage wallet, KYC, trades and payouts."}</p>
             </div>
             <div class="auth-card card">
+              ${message ? `<p class="alert">${message}</p>` : ""}
               <div class="auth-tabs">
                 <button id="loginTab" class="active" onclick="switchAuth('login')">${adminMode ? "Admin Login" : "Login"}</button>
                 <button id="registerTab" class="${adminMode ? "hidden" : ""}" onclick="switchAuth('register')">Register</button>
@@ -170,7 +175,7 @@
   };
   window.scrollToAuth = () => document.getElementById("loginBox")?.scrollIntoView({ behavior: "smooth", block: "start" });
   window.fillAdmin = () => {
-    location.href = location.pathname + "?admin";
+    location.href = "admin.html";
   };
   window.register = async (e) => {
     e.preventDefault();

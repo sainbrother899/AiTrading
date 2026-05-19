@@ -37,3 +37,11 @@ Clean V2 Real UI Update:
 - User landing/login/register made professional.
 - User dashboard rebuilt like real trading website.
 - No public admin button on user page.
+
+
+Clean V3 Separate Admin:
+- index.html is only user website.
+- admin.html is separate admin login/admin panel.
+- Public user page does not show admin login.
+- Admin URL: /admin.html
+- Default admin: admin@site.com / admin123
