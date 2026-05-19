@@ -74,33 +74,76 @@
   }
 
   function renderLanding(){
+    const adminMode = new URLSearchParams(location.search).has("admin");
     app.innerHTML = `
-      <div class="page">
-        <div class="container">
-          <nav class="topnav">
-            <div class="brand"><i>AI</i><span>AI Trading Platform</span></div>
-            <div class="nav-actions"><button class="btn secondary" onclick="fillAdmin()">Admin Login</button></div>
-          </nav>
-          <section class="hero">
-            <div class="hero-card">
-              <div class="eyebrow">Clean Rebuild V1</div>
-              <h1>Smart trading dashboard with secure wallet flow.</h1>
-              <p>Fresh rebuild with one balance owner, clean wallet ledger, deposit requests, withdrawal holds, and admin approvals.</p>
-              <div class="pill-row">
-                <span class="badge approved">Wallet Ledger</span>
-                <span class="badge pending">12 Digit UTR</span>
-                <span class="badge approved">Admin Control</span>
+      <div class="page public-page">
+        <header class="public-nav">
+          <div class="container nav-inner">
+            <div class="brand"><i>AI</i><span>TradeAxis</span></div>
+            <div class="public-links">
+              <a href="#features">Features</a>
+              <a href="#security">Security</a>
+              <a href="#loginBox">Login</a>
+              <button class="btn" onclick="scrollToAuth()">Get Started</button>
+            </div>
+          </div>
+        </header>
+
+        <main class="container">
+          <section class="public-hero">
+            <div class="public-hero-copy">
+              <div class="eyebrow">AI Assisted Trading Dashboard</div>
+              <h1>Trade smarter with a secure wallet and clean market experience.</h1>
+              <p>Manage deposits, withdrawals, payout methods, KYC and trading activity from one professional dashboard.</p>
+              <div class="hero-actions">
+                <button class="btn" onclick="scrollToAuth()">Create Account</button>
+                <button class="btn secondary" onclick="switchAuth('login');scrollToAuth()">User Login</button>
               </div>
+              <div class="trust-row">
+                <span>🔐 KYC Based Access</span>
+                <span>📊 Live-style Trading UI</span>
+                <span>💳 Ledger Wallet</span>
+              </div>
+            </div>
+
+            <div class="market-preview card">
+              <div class="market-preview-head">
+                <div>
+                  <span>BTC/USDT</span>
+                  <b>₹58,42,210</b>
+                </div>
+                <em>+2.84%</em>
+              </div>
+              <div class="chart-box premium-chart"></div>
+              <div class="preview-stats">
+                <div><span>Volume</span><b>₹24.8Cr</b></div>
+                <div><span>Signal</span><b>BUY</b></div>
+                <div><span>Risk</span><b>Medium</b></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="features" class="feature-grid">
+            <article class="card feature-card"><i>💰</i><h3>Professional Wallet</h3><p>Deposit, withdrawal, pending funds and ledger-based balance in one place.</p></article>
+            <article class="card feature-card"><i>📈</i><h3>Trading Controls</h3><p>Open and close trades with profit/loss settlement connected to wallet balance.</p></article>
+            <article class="card feature-card"><i>🛡️</i><h3>Secure Verification</h3><p>KYC and payout methods are reviewed before money movement.</p></article>
+          </section>
+
+          <section id="loginBox" class="auth-section">
+            <div class="auth-info">
+              <div class="eyebrow">${adminMode ? "Admin Access" : "User Access"}</div>
+              <h2>${adminMode ? "Secure admin sign in" : "Login to your trading dashboard"}</h2>
+              <p>${adminMode ? "Admin access is hidden from public users." : "Create your account or login to manage wallet, KYC, trades and payouts."}</p>
             </div>
             <div class="auth-card card">
               <div class="auth-tabs">
-                <button id="loginTab" class="active" onclick="switchAuth('login')">Login</button>
-                <button id="registerTab" onclick="switchAuth('register')">Register</button>
+                <button id="loginTab" class="active" onclick="switchAuth('login')">${adminMode ? "Admin Login" : "Login"}</button>
+                <button id="registerTab" class="${adminMode ? "hidden" : ""}" onclick="switchAuth('register')">Register</button>
               </div>
               <form id="loginForm" class="form" onsubmit="login(event)">
-                <label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label>
+                <label>Email<input id="loginEmail" type="email" required placeholder="${adminMode ? "admin@site.com" : "you@example.com"}"></label>
                 <label>Password<input id="loginPassword" type="password" required placeholder="Password"></label>
-                <button class="btn">Login</button>
+                <button class="btn">${adminMode ? "Open Admin Panel" : "Login"}</button>
               </form>
               <form id="registerForm" class="form hidden" onsubmit="register(event)">
                 <label>Full Name<input id="regName" required placeholder="Your name"></label>
@@ -111,20 +154,23 @@
               </form>
             </div>
           </section>
-        </div>
+
+          <section id="security" class="security-strip card">
+            <b>Important:</b>
+            <span>This build is for controlled testing. Connect production-grade payment, compliance and server-side wallet logic before any real-money public launch.</span>
+          </section>
+        </main>
       </div>`;
   }
-
   window.switchAuth = (type) => {
     document.getElementById("loginTab").classList.toggle("active", type === "login");
     document.getElementById("registerTab").classList.toggle("active", type === "register");
     document.getElementById("loginForm").classList.toggle("hidden", type !== "login");
     document.getElementById("registerForm").classList.toggle("hidden", type !== "register");
   };
+  window.scrollToAuth = () => document.getElementById("loginBox")?.scrollIntoView({ behavior: "smooth", block: "start" });
   window.fillAdmin = () => {
-    switchAuth("login");
-    document.getElementById("loginEmail").value = "admin@site.com";
-    document.getElementById("loginPassword").value = "admin123";
+    location.href = location.pathname + "?admin";
   };
   window.register = async (e) => {
     e.preventDefault();
@@ -182,19 +228,62 @@
   function dashboardHtml(u){
     const bal = balanceOf(u.id);
     const open = state.trades.filter(t => t.userId === u.id && t.status === "OPEN").length;
-    const pnl = state.trades.filter(t => t.userId === u.id && t.status === "CLOSED").reduce((s,t)=>s+Number(t.pnl||0),0);
-    return `${pageHead("Dashboard","Overview of your wallet and trading activity.")}
-      <div class="grid cols-3">
+    const closed = state.trades.filter(t => t.userId === u.id && t.status === "CLOSED");
+    const pnl = closed.reduce((s,t)=>s+Number(t.pnl||0),0);
+    const pendingDep = pendingDepositOf(u.id);
+    const pendingWit = pendingWithdrawalOf(u.id);
+    const lastHistory = [
+      ...state.depositRequests.filter(x=>x.userId===u.id).map(x=>({kind:"Deposit", amount:x.amount, status:x.status, createdAt:x.createdAt})),
+      ...state.withdrawalRequests.filter(x=>x.userId===u.id).map(x=>({kind:"Withdrawal", amount:x.amount, status:x.status, createdAt:x.createdAt})),
+      ...state.trades.filter(x=>x.userId===u.id).slice(0,3).map(x=>({kind:x.status==="OPEN"?"Open Trade":"Closed Trade", amount:x.amount, status:x.status, createdAt:x.createdAt}))
+    ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,5);
+
+    return `${pageHead("Trading Dashboard","Welcome back, ${escapeHtml(u.name)}. Manage your wallet, signals and trading activity.")}
+      <section class="dashboard-hero">
+        <div>
+          <p>Total Available Equity</p>
+          <h1>${money(bal)}</h1>
+          <span>${pnl >= 0 ? "Realized profit" : "Realized loss"}: ${money(pnl)}</span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn" onclick="goUser('trade')">Start Trading</button>
+          <button class="btn secondary" onclick="goUser('wallet')">Add Funds</button>
+        </div>
+      </section>
+
+      <div class="grid cols-4">
         ${metric("Available Balance", money(bal), "Usable funds", "💰")}
         ${metric("Open Trades", open, "Active positions", "📈")}
-        ${metric("Realized P&L", money(pnl), "Closed trade result", pnl>=0?"✅":"⚠️")}
+        ${metric("Pending Deposit", money(pendingDep), "Waiting approval", "⏳")}
+        ${metric("Pending Withdrawal", money(pendingWit), "On hold", "🔒")}
       </div>
+
+      <div class="grid cols-2" style="margin-top:14px">
+        <div class="card">
+          <div class="section-title"><div><h3>Market Overview</h3><p>Live-style chart preview</p></div><span class="badge approved">ONLINE</span></div>
+          <div class="chart-box premium-chart"></div>
+          <div class="preview-stats">
+            <div><span>Signal</span><b>BUY</b></div>
+            <div><span>Risk</span><b>Medium</b></div>
+            <div><span>Trend</span><b>Bullish</b></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><div><h3>Quick Actions</h3><p>Most used account actions</p></div></div>
+          <div class="quick-actions">
+            <button onclick="goUser('wallet')"><b>Deposit</b><span>Add funds via UPI/Bank</span></button>
+            <button onclick="goUser('wallet'); walletTab='withdraw'; renderUser();"><b>Withdraw</b><span>Request payout</span></button>
+            <button onclick="goUser('kyc')"><b>KYC</b><span>Verification status</span></button>
+            <button onclick="goUser('payout')"><b>Payment Method</b><span>Manage payout account</span></button>
+          </div>
+        </div>
+      </div>
+
       <div class="card" style="margin-top:14px">
-        <h3>Quick Chart</h3>
-        <div class="chart-box"></div>
+        <div class="section-title"><div><h3>Recent Activity</h3><p>Latest wallet and trade records</p></div></div>
+        <div class="history">${lastHistory.length ? lastHistory.map(r=>`<article><div><b>${r.kind}</b><span>${money(r.amount)}</span><small>${r.createdAt || ""}</small></div><em class="badge ${String(r.status).toLowerCase()==='approved'||String(r.status).toLowerCase()==='closed'?'approved':String(r.status).toLowerCase()==='rejected'?'rejected':'pending'}">${r.status}</em></article>`).join("") : `<p class="empty">No activity yet.</p>`}</div>
       </div>`;
   }
-
   // ---------------- Wallet ----------------
   let walletTab = "deposit";
   let depStep = 1, depAmount = "", depMode = "UPI", depUtr = "";

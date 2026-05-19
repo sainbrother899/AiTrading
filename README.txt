@@ -29,3 +29,11 @@ Supabase:
 - First test locally with browser storage.
 - Then add SUPABASE_URL and SUPABASE_ANON_KEY in config.js.
 - Run supabase-schema.sql in Supabase SQL Editor.
+
+
+Clean V2 Real UI Update:
+- Public admin login button removed.
+- Hidden admin access: open index.html?admin
+- User landing/login/register made professional.
+- User dashboard rebuilt like real trading website.
+- No public admin button on user page.
